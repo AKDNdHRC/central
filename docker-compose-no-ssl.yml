@@ -3,14 +3,13 @@ services:
   postgres:
     image: "postgres:9.6"
     volumes:
-      - /var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: odk
       POSTGRES_PASSWORD: odk
       POSTGRES_DATABASE: odk
     restart: always
   mail:
-    container_name: mail
     image: "itsissa/namshi-smtp:4.89-2.deb9u5"
     volumes:
       - ./files/dkim/config:/etc/exim4/_docker_additional_macros:ro
@@ -20,7 +19,6 @@ services:
     restart: always
 
   service:
-    container_name: service
     build:
       context: .
       dockerfile: service.dockerfile
@@ -40,7 +38,6 @@ services:
     restart: always
   
   nginx:
-    container_name: nginx
     build:
       context: .
       dockerfile: nginx-nossl.dockerfile
@@ -63,7 +60,6 @@ services:
     restart: always
 
   secrets:
-    container_name: secrets
     volumes:
       - secrets:/etc/secrets
     build:
@@ -72,7 +68,6 @@ services:
     command: './generate-secrets.sh'
 
   enketo:
-    container_name: enketo
     volumes:
       - secrets:/etc/secrets
     build:
@@ -89,7 +84,6 @@ services:
     
   enketo_redis_main:
     image: redis:5
-    container_name: enketo_redis_main
     volumes:
       - ./files/enketo/redis-enketo-main.conf:/usr/local/etc/redis/redis.conf:ro
       - enketo_redis_main:/data
@@ -100,7 +94,6 @@ services:
 
   enketo_redis_cache:
     image: redis:5
-    container_name: enketo_redis_cache
     volumes:
       - ./files/enketo/redis-enketo-cache.conf:/usr/local/etc/redis/redis.conf:ro
       - enketo_redis_cache:/data
@@ -114,4 +107,4 @@ volumes:
   enketo_redis_main:
   enketo_redis_cache:
   secrets:
-
+  pgdata:
